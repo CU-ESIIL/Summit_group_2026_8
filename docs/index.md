@@ -19,12 +19,12 @@ public_mode_toggle: true
     - If you turn off 'Instructions' then you will only see the page content for public display.
     
 
-# Team 8 Home: Make Me Your Own
+# Predicting community coalescence with GNNs
 
 !!! note "Day 1 directions"
     Change the title to the name of your project.
 
-    [Edit Day 1 setup in Markdown](https://github.com/CU-ESIIL/Summit_group_2026_8/edit/main/docs/index.md?plain=1#L21){ .md-button target="_blank" rel="noopener" }
+    [Editing link](https://github.com/CU-ESIIL/Summit_group_2026_8/edit/main/docs/index.md?plain=1#L21){ .md-button target="_blank" rel="noopener" }
 
 !!! tip "For ESIIL staff"
     Group Number: 8
