@@ -34,7 +34,7 @@ public_mode_toggle: true
     [ESIIL staff edit in Markdown](https://github.com/CU-ESIIL/Summit_group_2026_8/edit/main/docs/index.md?plain=1#L28){ .md-button target="_blank" rel="noopener" }
     
 
-![Team hero image](assets/hero/hero.png)
+![Team hero image](assets/hero/group_8_image.png)
 
 !!! note "How to replace the image above"
     Upload an image that represents your project and welcome people to your page. 
