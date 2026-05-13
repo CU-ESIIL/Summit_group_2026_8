@@ -3,25 +3,9 @@ title: Team Home
 public_mode_toggle: true
 ---
 
-!!! tip "How to use this page during the Summit"
-    - This page is your team’s shared workspace and final report-out page. It captures your group’s process and thinking throughout the Summit and will be used to share your work with others. 
-    
-    - Use this page as your team’s working record during the Summit and your final report-out.
-    
-    - The Summit has several different goals and thus you will use the page differently each day: Day 1 is for alignment, Day 2 is for building one useful thing, and Day 3 is for synthesis and report- out.
-    
-    - Look for the green buttons to indicate what you need to edit. 
-    
-    - Megaphones 📣 indicate which items you will be presenting during the end-of-day report-outs.
-
-    - Only the items with megaphones will be visible when you hit the 'Summit Report Out' button. 
-
-    - If you turn off 'Instructions' then you will only see the page content for public display.
-    
-
 # Predicting community coalescence with GNNs
 
-#### Can a model learn high-order contextual species interactions to predict [community coalescence](https://www.cell.com/trends/ecology-evolution/abstract/S0169-5347(15)00142-1){target="_blank"} outcomes?
+#### Can a model learn high-order contextual species interactions to predict [community coalescence](https://www.cell.com/trends/ecology-evolution/abstract/S0169-5347(15)00142-1){ .md-button target="_blank" rel="noopener"} outcomes?
 
 
 !!! tip "For ESIIL staff"
@@ -50,7 +34,7 @@ public_mode_toggle: true
 
 | Name | Affiliation | Contact | Github |
 |---|---|---|---|
-| | | | |
+| Geoff Zahn | William & Mary | gzahn@wm.edu | https://gzahn.github.io |
 | | | | |
 
 ## Team Norms and Decision Making { #team-norms-and-decision-making }
