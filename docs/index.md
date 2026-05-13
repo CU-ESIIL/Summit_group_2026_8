@@ -35,7 +35,7 @@ public_mode_toggle: true
 | Name | Affiliation | Contact | Github |
 |---|---|---|---|
 | Geoff Zahn | William & Mary | gzahn@wm.edu | [gzahn.github.io](https://gzahn.github.io/){target="_blank"} |
-| | | | |
+| Manish Sarkar | Case Western Reserve University | manish.sarkar@case.edu | manishNsarkar|
 
 ## Team Norms and Decision Making { #team-norms-and-decision-making }
 
