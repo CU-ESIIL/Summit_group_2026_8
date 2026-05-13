@@ -34,7 +34,7 @@ public_mode_toggle: true
 
 | Name | Affiliation | Contact | Github |
 |---|---|---|---|
-| Geoff Zahn | William & Mary | gzahn@wm.edu | https://gzahn.github.io |
+| Geoff Zahn | William & Mary | gzahn@wm.edu | [gzahn.github.io](https://gzahn.github.io/){target="_blank"} |
 | | | | |
 
 ## Team Norms and Decision Making { #team-norms-and-decision-making }
