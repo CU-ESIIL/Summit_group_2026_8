@@ -131,7 +131,7 @@ People who could use this:
 **Promising data sources:**
 
 - Great Fir Innoculations: Soon to be published data on a controlled seed innoculation experiment
-- [Human Microbiome Project](https://commonfund.nih.gov/hmp): Human microbiome project
+- [Fecal Transplant Data](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA296920) | [Related publication](https://pubmed.ncbi.nlm.nih.gov/28195180/)
 - Seed mix restorations (NECASC/RISCC?): After management or removal of invasive species, managers often plant commercial "native plant" seed mixes.
 
 ## Methods/technologies we’re testing 📣 { #methods-and-code .oasis-report-out-section .oasis-report-out-day2 }
