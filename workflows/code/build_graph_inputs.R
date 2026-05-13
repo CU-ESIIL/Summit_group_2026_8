@@ -327,17 +327,121 @@ prep_spieceasi_matrix <- function(community_df, metadata_row) {
 
   if (detect_relative_abundance(filtered_df) && isTRUE(scale_to_counts)) {
     filtered_df <- round(filtered_df * scale_factor)
-    prep$message <- sprintf("Relative abundances were scaled to pseudo-counts with factor %s.", format(scale_factor, scientific = FALSE))
+    prep$message <- str_trim(paste(
+      prep$message,
+      sprintf("Relative abundances were scaled to pseudo-counts with factor %s.", format(scale_factor, scientific = FALSE))
+    ))
+  }
+
+  # SpiecEasi needs sample-to-sample variation. Pooled donor strata in this
+  # workshop dataset often contain repeated identical profiles, so they are
+  # intentionally skipped rather than recorded as model failures.
+  variable_taxa <- vapply(filtered_df, function(x) {
+    x <- as.numeric(x)
+    length(unique(x[is.finite(x)])) > 1
+  }, logical(1))
+
+  if (sum(variable_taxa) < min_taxa) {
+    prep$skipped <- TRUE
+    prep$n_taxa_after_filter <- sum(variable_taxa)
+    prep$message <- sprintf(
+      "Skipped: %s variable taxa after prevalence filtering; requires at least %s. This usually indicates repeated identical sample profiles.",
+      sum(variable_taxa),
+      min_taxa
+    )
+    return(prep)
+  }
+
+  if (sum(variable_taxa) < ncol(filtered_df)) {
+    filtered_df <- filtered_df |> select(all_of(names(variable_taxa)[variable_taxa]))
+    prep$message <- str_trim(paste(
+      prep$message,
+      sprintf("Removed %s non-variable taxa before SpiecEasi.", sum(!variable_taxa))
+    ))
   }
 
   if (any(rowSums(filtered_df, na.rm = TRUE) == 0)) {
     filtered_df <- filtered_df + 1
-    prep$message <- paste(c(prep$message, "Added pseudocount of 1 to avoid zero-sum samples."), collapse = " ")
+    prep$message <- str_trim(paste(prep$message, "Added pseudocount of 1 to avoid zero-sum samples."))
   }
 
+  prep$n_taxa_after_filter <- ncol(filtered_df)
   prep$matrix <- as.matrix(filtered_df)
   prep$prevalence <- prevalence[colnames(filtered_df)]
   prep
+}
+
+safe_get_spieceasi_matrix <- function(fit, getter_name) {
+  getter <- get0(getter_name, envir = asNamespace("SpiecEasi"), mode = "function")
+  if (is.null(getter)) {
+    return(NULL)
+  }
+  tryCatch(
+    Matrix::as.matrix(getter(fit)),
+    error = function(err) NULL
+  )
+}
+
+build_spieceasi_edges <- function(fit, taxa_names, prepped, input_file) {
+  adjacency <- safe_get_spieceasi_matrix(fit, "getRefit")
+  if (is.null(adjacency) || is.null(dim(adjacency)) || any(dim(adjacency) == 0)) {
+    return(tibble())
+  }
+
+  adjacency[is.na(adjacency)] <- 0
+  diag(adjacency) <- 0
+  edge_positions <- which(upper.tri(adjacency) & adjacency != 0, arr.ind = TRUE)
+  if (nrow(edge_positions) == 0) {
+    return(tibble())
+  }
+
+  weight_matrix <- abs(adjacency)
+  sign_matrix <- matrix(NA_real_, nrow = nrow(adjacency), ncol = ncol(adjacency))
+  method_label <- paste0("spieceasi_", spieceasi_method)
+
+  if (spieceasi_method == "mb") {
+    beta <- safe_get_spieceasi_matrix(fit, "getOptBeta")
+    if (!is.null(beta) && all(dim(beta) == dim(adjacency))) {
+      beta[is.na(beta)] <- 0
+      weight_matrix <- pmax(abs(beta), abs(t(beta)))
+      signed_matrix <- beta + t(beta)
+      sign_matrix <- sign(signed_matrix)
+      sign_matrix[sign_matrix == 0] <- NA_real_
+    }
+  } else if (spieceasi_method == "glasso") {
+    theta <- safe_get_spieceasi_matrix(fit, "getOptTheta")
+    if (is.null(theta)) {
+      theta <- safe_get_spieceasi_matrix(fit, "getOptiCov")
+    }
+    if (is.null(theta)) {
+      theta <- safe_get_spieceasi_matrix(fit, "getOptCov")
+    }
+    if (!is.null(theta) && all(dim(theta) == dim(adjacency))) {
+      diag_theta <- diag(theta)
+      if (all(is.finite(diag_theta)) && all(diag_theta > 0)) {
+        inv_sqrt_diag <- diag(1 / sqrt(diag_theta))
+        partial_corr <- -inv_sqrt_diag %*% theta %*% inv_sqrt_diag
+        diag(partial_corr) <- 0
+        weight_matrix <- abs(partial_corr)
+        sign_matrix <- sign(partial_corr)
+      }
+    }
+  }
+
+  tibble(
+    kingdom = prepped$kingdom,
+    donor_id = prepped$donor_id,
+    community_type = prepped$community_type,
+    taxon_a = taxa_names[edge_positions[, "row"]],
+    taxon_b = taxa_names[edge_positions[, "col"]],
+    weight = weight_matrix[edge_positions],
+    sign = sign_matrix[edge_positions],
+    method = method_label,
+    n_samples = prepped$n_samples,
+    prevalence_a = unname(prepped$prevalence[taxa_names[edge_positions[, "row"]]]),
+    prevalence_b = unname(prepped$prevalence[taxa_names[edge_positions[, "col"]]])
+  ) |>
+    arrange(kingdom, donor_id, community_type, taxon_a, taxon_b)
 }
 
 run_spieceasi_for_stratum <- function(prepped, input_file) {
@@ -373,23 +477,38 @@ run_spieceasi_for_stratum <- function(prepped, input_file) {
   result <- tryCatch(
     {
       set.seed(random_seed)
-      setTimeLimit(elapsed = spieceasi_time_limit_seconds, transient = TRUE)
-      on.exit(setTimeLimit(cpu = Inf, elapsed = Inf, transient = FALSE), add = TRUE)
-      fit <- spiec.easi(
-        prepped$matrix,
-        method = spieceasi_method,
-        nlambda = nlambda,
-        lambda.min.ratio = lambda_min_ratio,
-        sel.criterion = spieceasi_sel_criterion,
-        pulsar.params = list(rep.num = rep_num, ncores = spieceasi_ncores),
-        verbose = FALSE
+      if (is.finite(spieceasi_time_limit_seconds)) {
+        setTimeLimit(elapsed = spieceasi_time_limit_seconds, transient = TRUE)
+        on.exit(setTimeLimit(cpu = Inf, elapsed = Inf, transient = FALSE), add = TRUE)
+      }
+
+      captured_warnings <- character()
+      fit <- withCallingHandlers(
+        spiec.easi(
+          prepped$matrix,
+          method = spieceasi_method,
+          nlambda = nlambda,
+          lambda.min.ratio = lambda_min_ratio,
+          sel.criterion = spieceasi_sel_criterion,
+          pulsar.params = list(rep.num = rep_num, ncores = spieceasi_ncores),
+          verbose = FALSE
+        ),
+        warning = function(w) {
+          captured_warnings <<- c(captured_warnings, conditionMessage(w))
+          invokeRestart("muffleWarning")
+        }
       )
-      theta <- Matrix::as.matrix(getOptiCov(fit))
-      partial_corr <- build_spieceasi_edges(theta, colnames(prepped$matrix), prepped, input_file)
-      summary_row$n_edges <- nrow(partial_corr)
+
+      edges <- build_spieceasi_edges(fit, colnames(prepped$matrix), prepped, input_file)
+      summary_row$n_edges <- nrow(edges)
       summary_row$status <- "success"
-      summary_row$message <- str_trim(paste("SpiecEasi completed successfully.", prepped$message))
-      list(edges = partial_corr, summary = summary_row)
+      warning_text <- if (length(captured_warnings) > 0) {
+        paste("Warnings:", paste(unique(captured_warnings), collapse = " | "))
+      } else {
+        ""
+      }
+      summary_row$message <- str_trim(paste("SpiecEasi completed successfully.", prepped$message, warning_text))
+      list(edges = edges, summary = summary_row)
     },
     error = function(err) {
       summary_row$status <- "failed"
@@ -399,41 +518,6 @@ run_spieceasi_for_stratum <- function(prepped, input_file) {
   )
 
   result
-}
-
-build_spieceasi_edges <- function(theta, taxa_names, prepped, input_file) {
-  if (is.null(dim(theta)) || any(dim(theta) == 0)) {
-    return(tibble())
-  }
-
-  diag_theta <- diag(theta)
-  if (any(diag_theta <= 0)) {
-    stop(sprintf("Non-positive diagonal entries encountered in precision matrix for %s", basename(input_file)), call. = FALSE)
-  }
-
-  inv_sqrt_diag <- diag(1 / sqrt(diag_theta))
-  partial_corr <- -inv_sqrt_diag %*% theta %*% inv_sqrt_diag
-  diag(partial_corr) <- 0
-
-  edge_positions <- which(upper.tri(partial_corr) & partial_corr != 0, arr.ind = TRUE)
-  if (nrow(edge_positions) == 0) {
-    return(tibble())
-  }
-
-  tibble(
-    kingdom = prepped$kingdom,
-    donor_id = prepped$donor_id,
-    community_type = prepped$community_type,
-    taxon_a = taxa_names[edge_positions[, "row"]],
-    taxon_b = taxa_names[edge_positions[, "col"]],
-    weight = abs(partial_corr[edge_positions]),
-    sign = sign(partial_corr[edge_positions]),
-    method = paste0("spieceasi_", spieceasi_method),
-    n_samples = prepped$n_samples,
-    prevalence_a = unname(prepped$prevalence[taxa_names[edge_positions[, "row"]]]),
-    prevalence_b = unname(prepped$prevalence[taxa_names[edge_positions[, "col"]]])
-  ) |>
-    arrange(kingdom, donor_id, community_type, taxon_a, taxon_b)
 }
 
 build_multirelational_edges <- function(sample_taxon_edges, taxon_taxon_edges) {
