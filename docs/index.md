@@ -58,13 +58,13 @@ public_mode_toggle: true
 
     [Edit Team Norms in Markdown](https://github.com/CU-ESIIL/Summit_group_2026_8/edit/main/docs/index.md?plain=1#L87){ .md-button target="_blank" rel="noopener" }
 
-Our team norms:
+**Our team norms:**
 
 - Have good github hygeine (Pull often!)
 - Use slack for communications
 - Log all AI agent prompts and metadata
 
-Our decision making strategy:
+**Our decision making strategy:**
 
 We are a small group, so we want everyone to agree with major decisions that affect the direction of the project.
 
@@ -77,11 +77,11 @@ We are a small group, so we want everyone to agree with major decisions that aff
 
     [Edit content below here in Markdown](https://github.com/CU-ESIIL/Summit_group_2026_8/edit/main/docs/index.md?plain=1#L106){ .md-button target="_blank" rel="noopener" }
 
-Short term:
+**Short term:**
 
 - A trial GNN so we can figure out what we need to know/who we need to recruit
 
-Long term:
+**Long term:**
 
 - A publication for the model and framework approach
 - A Big and Fancy later publication applying the model to a new research system with public data
@@ -92,11 +92,11 @@ Long term:
 
 ## Our question(s) 📣 { #project-question .oasis-report-out-section .oasis-report-out-day2 }
 
-Our working question:
+**Our working question:**
 
 - Can we predict a coalescent community from known resident and donor communities?
 
-What would count as progress:
+**What would count as progress:**
 
 - Getting data ready to input into a model
 - Developing a model structure
@@ -128,7 +128,7 @@ People who could use this:
 
 *Snapshot showing initial data patterns.*
 
-Promising data sources:
+**Promising data sources:**
 
 - Great Fir Innoculations: Soon to be published data on a controlled seed innoculation experiment
 - [Human Microbiome Project](https://commonfund.nih.gov/hmp): Human microbiome project
@@ -139,9 +139,9 @@ Promising data sources:
 !!! note "methods"
     Add 2-4 methods/technologies we're testing (stats, models, viz).
 
-[View shared code](https://github.com/CU-ESIIL/Summit_group_2026_8/tree/main/code){ .md-button }
+[View shared code](https://github.com/CU-ESIIL/Summit_group_2026_8/tree/main/docs/code){ .md-button }
 
-Methods/technologies we are testing:
+**Methods/technologies we are testing:**
 
 | Method or technology | What we tested | Early note |
 |---|---|---|
@@ -159,9 +159,18 @@ Methods/technologies we are testing:
 
 ### Next Steps
 
-Short term: 
+**Short term: **
 
-Long term: 
+ - Finalize initial case study data set preparation
+ - Initial draft model code completed
+ - Identify other collaborator(s) as needed
+
+**Long term: **
+
+ - Build literature base
+ - Test & improve model architecture
+ - Run 3-4 different cases through model
+ - Publish the greatest paper of all time!
 
 !!! note "Day 3 Tasks"
     Sythesis: highlight 2-3 visuals that tell the story; keep text crisp. Practice a 6-minute walkthrough of the homepage. Why -> Questions -> Data/Methods -> Findings -> Next 
