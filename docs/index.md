@@ -60,13 +60,13 @@ public_mode_toggle: true
 
 Our team norms:
 
-- ...
-- ...
-- ...
+- Have good github hygeine (Pull often!)
+- Use slack for communications
+- Log all AI agent prompts and metadata
 
 Our decision making strategy:
 
-...
+We are a small group, so we want everyone to agree with major decisions that affect the direction of the project.
 
 ## Our product(s) 📣 { #product-direction .oasis-report-out-section .oasis-report-out-day2 }
 
@@ -79,12 +79,12 @@ Our decision making strategy:
 
 Short term:
 
-...
+- A trial GNN so we can figure out what we need to know/who we need to recruit
 
 Long term:
 
-- ...
-- ...
+- A publication for the model and framework approach
+- A Big and Fancy later publication applying the model to a new research system with public data
 
 ![Day 2 morning whiteboard or notes photo](assets/whiteboards/day2_morning_whiteboard.svg)
 
@@ -94,24 +94,28 @@ Long term:
 
 Our working question:
 
-...
+- Can we predict a coalescent community from known resident and donor communities?
 
 What would count as progress:
 
-...
+- Getting data ready to input into a model
+- Developing a model structure
+- Having a timeline for future work
 
-## Hypotheses/Intentions [Optional: probably not relevant if you are creating an educational tool]
+## Hypotheses/Intentions
 
+- We hypothesize that a Graphical Neural Network will adequately (>80%) predict community coalescence from resident and donor community compositions.
 
 ## Why this matters (the “upshot”) 📣 { #why-this-matters .oasis-report-out-section .oasis-report-out-day2 }
 
 This matters because:
 
-...
+- It applies a novel framework and approach to a simple ecological question: when you combine two communities, who stays?
+- A working model would be highly generalizable to many biological systems, both micro and macro.
 
 People who could use this:
 
-...
+- Restoration managers, agriculturalists, human microbiome community, probiotic researchers
 
 ## Data sources we’re exploring 📣 { #data-exploration .oasis-report-out-section .oasis-report-out-day2 }
 
@@ -126,10 +130,9 @@ People who could use this:
 
 Promising data sources:
 
-- [Data source 1](#): ...
-- [Data source 2](#): ...
-- [Data source 3](#): ...
-- [Data source 4](#): ...
+- Great Fir Innoculations: Soon to be published data on a controlled seed innoculation experiment
+- [Human Microbiome Project](https://commonfund.nih.gov/hmp): Human microbiome project
+- Seed mix restorations (NECASC/RISCC?): After management or removal of invasive species, managers often plant commercial "native plant" seed mixes.
 
 ## Methods/technologies we’re testing 📣 { #methods-and-code .oasis-report-out-section .oasis-report-out-day2 }
 
@@ -142,15 +145,13 @@ Methods/technologies we are testing:
 
 | Method or technology | What we tested | Early note |
 |---|---|---|
-| ... | ... | ... |
-| ... | ... | ... |
-| ... | ... | ... |
-| ... | ... | ... |
+| PyTorch | Python-based GNN building | Working on data reformatting and getting the model to run |
+| Reticulate | R-based GNN building | Might transition to this later |
 
 ### Challenges identified
 
-- ...
-- ...
+- We have not coded our own GNNs before
+- We lack python skills, but are searching for workarounds in R, Bash, or Mathematica
 
 ### Visuals
 
