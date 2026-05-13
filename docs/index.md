@@ -36,7 +36,7 @@ public_mode_toggle: true
 |---|---|---|---|
 | Geoff Zahn | William & Mary | gzahn@wm.edu | [gzahn.github.io](https://gzahn.github.io/){target="_blank"} |
 | Manish Sarkar | Case Western Reserve University | manish.sarkar@case.edu | manishNsarkar|
-| Cooper Kimball-Rhines | University of Massachusetts Boston | c.kimballrhines001@umb.edu |
+| Cooper Kimball-Rhines | University of Massachusetts Boston | c.kimballrhines001@umb.edu | [coopermkr.github.io](https://coopermkr.github.io/){target="_blank"} |
 
 ## Team Norms and Decision Making { #team-norms-and-decision-making }
 
