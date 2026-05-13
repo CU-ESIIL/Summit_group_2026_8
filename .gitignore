@@ -49,3 +49,7 @@ rsconnect/
 
 # macOS
 .DS_Store
+
+# Workflow outputs (can be large; keep local)
+workflows/output/**
+!workflows/output/.gitkeep
