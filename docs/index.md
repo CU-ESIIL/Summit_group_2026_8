@@ -21,10 +21,8 @@ public_mode_toggle: true
 
 # Predicting community coalescence with GNNs
 
-!!! note "Day 1 directions"
-    Change the title to the name of your project.
+#### Can a model learn high-order contextual species interactions to predict [community coalescence](https://www.cell.com/trends/ecology-evolution/abstract/S0169-5347(15)00142-1){ .md-button target="_blank" rel="noopener" } outcomes?
 
-    [Editing link](https://github.com/CU-ESIIL/Summit_group_2026_8/edit/main/docs/index.md?plain=1#L21){ .md-button target="_blank" rel="noopener" }
 
 !!! tip "For ESIIL staff"
     Group Number: 8
