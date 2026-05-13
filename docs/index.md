@@ -145,13 +145,13 @@ Methods/technologies we are testing:
 
 | Method or technology | What we tested | Early note |
 |---|---|---|
-| PyTorch | Python-based GNN building | Working on data reformatting and getting the model to run |
-| Reticulate | R-based GNN building | Might transition to this later |
+| PyTorch | Deep Learning Library| Working on data reformatting and getting the model to run |
+| TensorFlow | Deep Learning Library | Might transition to this later to use in R using Keras, Reticulate |
 
 ### Challenges identified
 
 - We have not coded our own GNNs before
-- We lack python skills, but are searching for workarounds in R, Bash, or Mathematica
+- We lack python skills, but are searching for workarounds in R
 
 ### Visuals
 
