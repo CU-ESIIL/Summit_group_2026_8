@@ -86,7 +86,7 @@ Long term:
 - A publication for the model and framework approach
 - A Big and Fancy later publication applying the model to a new research system with public data
 
-![Day 2 morning whiteboard or notes photo](docs/assets/whiteboardNotes.jpg)
+![Day 2 morning whiteboard or notes photo](assets/whiteboardNotes.jpg)
 
 *Morning whiteboard or notes showing the question, hypotheses, and context we used to start Day 2.*
 
@@ -124,7 +124,7 @@ People who could use this:
 
     Add 2-4 promising data sources (links +1-line notes)    
 
-![Exploration figure](docs/assets/transplant_success.png)
+![Exploration figure](assets/transplant_success.png)
 
 *Snapshot showing initial data patterns.*
 
