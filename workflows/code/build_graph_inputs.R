@@ -42,6 +42,7 @@ spieceasi_ncores <- max(1, parallel::detectCores(logical = FALSE) - 1)
 
 sample_taxon_edges_filename <- "combined_sample_taxon_edges.csv"
 sample_nodes_filename <- "nodes_samples.csv"
+triplets_filename <- "coalescence_triplets.csv"
 taxon_nodes_filename <- "nodes_taxa.csv"
 taxon_taxon_edges_filename <- "taxon_taxon_spieceasi_edges.csv"
 multirelational_edges_filename <- "graph_edges_multirelational.csv"
@@ -469,7 +470,71 @@ build_multirelational_edges <- function(sample_taxon_edges, taxon_taxon_edges) {
   bind_rows(sample_edges, taxon_edges)
 }
 
-write_readme <- function(output_dir, discovered_files, sample_taxon_edges, taxon_nodes, spieceasi_edges, summary_tbl, workflow_notes) {
+build_coalescence_triplets <- function(sample_nodes) {
+  required_cols <- c("sample_id", "kingdom", "donor_id", "community_type")
+  missing_cols <- setdiff(required_cols, names(sample_nodes))
+  if (length(missing_cols) > 0) {
+    warning("Cannot build coalescence triplets because nodes_samples is missing columns: ", paste(missing_cols, collapse = ", "))
+    return(tibble())
+  }
+
+  resident_ids <- sample_nodes |>
+    filter(community_type == "resident") |>
+    select(kingdom, donor_id, sample_id) |>
+    rename(resident_sample_id = sample_id)
+
+  final_ids <- sample_nodes |>
+    filter(community_type == "final") |>
+    select(kingdom, donor_id, sample_id) |>
+    rename(final_sample_id = sample_id)
+
+  donor_counts <- sample_nodes |>
+    filter(community_type == "donor") |>
+    count(kingdom, donor_id, name = "n_donor_samples")
+
+  if (nrow(resident_ids) == 0 || nrow(final_ids) == 0) {
+    warning("Cannot build coalescence triplets because resident or final samples were not found.")
+    return(tibble())
+  }
+
+  triplets <- inner_join(
+    resident_ids,
+    final_ids,
+    by = c("kingdom", "donor_id"),
+    relationship = "many-to-many"
+  ) |>
+    filter(resident_sample_id == final_sample_id) |>
+    mutate(
+      microcosm_id = paste(kingdom, donor_id, resident_sample_id, sep = "::"),
+      donor_source_id = donor_id,
+      donor_sample_id = NA_character_,
+      donor_is_pooled = TRUE,
+      pairing_basis = "resident_final_same_sample_id; donor_source_by_donor_id"
+    ) |>
+    left_join(donor_counts, by = c("kingdom", "donor_id")) |>
+    mutate(n_donor_samples = replace_na(n_donor_samples, 0L)) |>
+    select(
+      microcosm_id,
+      kingdom,
+      donor_id,
+      donor_source_id,
+      donor_sample_id,
+      resident_sample_id,
+      final_sample_id,
+      donor_is_pooled,
+      n_donor_samples,
+      pairing_basis
+    ) |>
+    arrange(kingdom, donor_id, resident_sample_id)
+
+  if (nrow(triplets) == 0) {
+    warning("No resident-final sample pairs matched by identical sample_id within kingdom and donor_id.")
+  }
+
+  triplets
+}
+
+write_readme <- function(output_dir, discovered_files, sample_taxon_edges, taxon_nodes, spieceasi_edges, summary_tbl, triplets, workflow_notes) {
   detected_community_files <- paste0("- `", basename(discovered_files$community_file), "`")
   detected_taxonomy_files <- discovered_files |>
     distinct(kingdom, taxonomy_file) |>
@@ -524,6 +589,13 @@ write_readme <- function(output_dir, discovered_files, sample_taxon_edges, taxon
     "- `name = \"\"` when genus is missing",
     "Higher taxonomy is retained only as optional metadata fields, not as the primary name.",
     "",
+    "## Coalescence Triplets",
+    "",
+    "The workflow also writes `coalescence_triplets.csv`, which defines the supervised prediction units for this workshop dataset.",
+    "Resident and final communities are paired when they share the same `sample_id` within a given `kingdom` and `donor_id`.",
+    "Donor communities are represented at the pooled donor-source level: all resident/final samples with the same `donor_id` share the same donor-source input.",
+    "Accordingly, `donor_sample_id` is `NA`, `donor_source_id` stores the donor treatment/source, and `donor_is_pooled` is `TRUE`.",
+    "",
     "## SpiecEasi Networks",
     "",
     "SpiecEasi is run separately for each `kingdom x donor_id x community_type` stratum so that bacteria and fungi are not pooled, donor/resident/final communities are not pooled, and donor IDs are not pooled.",
@@ -551,6 +623,7 @@ write_readme <- function(output_dir, discovered_files, sample_taxon_edges, taxon
     "",
     paste0("- `", sample_taxon_edges_filename, "`: nonzero sample-taxon bipartite edges with abundance and experimental context."),
     paste0("- `", sample_nodes_filename, "`: unique sample nodes with kingdom, donor ID, and community type."),
+    paste0("- `", triplets_filename, "`: supervised coalescence units linking resident and final samples by shared sample ID within kingdom and donor source; donor input is represented by pooled donor source ID."),
     paste0("- `", taxon_nodes_filename, "`: unique taxon nodes with names and taxonomy metadata."),
     paste0("- `", taxon_taxon_edges_filename, "`: undirected SpiecEasi taxon-taxon edges with inferred association weights and signs."),
     paste0("- `", multirelational_edges_filename, "`: flat edge file combining sample-taxon and taxon-taxon relations."),
@@ -584,6 +657,7 @@ write_readme <- function(output_dir, discovered_files, sample_taxon_edges, taxon
     "",
     paste0("- Sample-taxon edges: `", format(nrow(sample_taxon_edges), big.mark = ","), "`"),
     paste0("- Sample nodes: `", format(n_distinct(sample_taxon_edges$sample_id), big.mark = ","), "`"),
+    paste0("- Coalescence triplets: `", format(nrow(triplets), big.mark = ","), "`"),
     paste0("- Taxon nodes: `", format(nrow(taxon_nodes), big.mark = ","), "`"),
     paste0("- SpiecEasi edges: `", format(nrow(spieceasi_edges), big.mark = ","), "`"),
     paste0("- Successful SpiecEasi strata: `", nrow(successful_runs), "`"),
@@ -649,6 +723,8 @@ main <- function() {
     distinct(sample_id, kingdom, donor_id, community_type) |>
     arrange(kingdom, donor_id, community_type, sample_id)
 
+  coalescence_triplets <- build_coalescence_triplets(sample_nodes)
+
   taxonomy_tables <- map2_dfr(
     community_results,
     seq_along(community_results),
@@ -669,6 +745,7 @@ main <- function() {
 
   readr::write_csv(sample_taxon_edges, file.path(workflow_output_dir, sample_taxon_edges_filename))
   readr::write_csv(sample_nodes, file.path(workflow_output_dir, sample_nodes_filename))
+  readr::write_csv(coalescence_triplets, file.path(workflow_output_dir, triplets_filename))
   readr::write_csv(taxon_nodes, file.path(workflow_output_dir, taxon_nodes_filename))
 
   spieceasi_results <- map(
@@ -696,6 +773,9 @@ main <- function() {
   if (nrow(spieceasi_edges) == 0) {
     workflow_notes <- c(workflow_notes, "All SpiecEasi strata were skipped or failed, so the multirelational edge file contains sample-taxon edges only.")
   }
+  if (nrow(coalescence_triplets) == 0) {
+    workflow_notes <- c(workflow_notes, "No resident-final coalescence triplets were identified by matching sample_id within kingdom and donor_id.")
+  }
 
   write_readme(
     output_dir = workflow_output_dir,
@@ -704,6 +784,7 @@ main <- function() {
     taxon_nodes = taxon_nodes,
     spieceasi_edges = spieceasi_edges,
     summary_tbl = summary_tbl,
+    triplets = coalescence_triplets,
     workflow_notes = unique(workflow_notes[nzchar(workflow_notes)])
   )
 
