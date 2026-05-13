@@ -126,7 +126,7 @@ People who could use this:
 
 ![Exploration figure](assets/transplant_success.png)
 
-*Snapshot showing initial data patterns.*
+*"Success" of various taxonomic groups at establishing after coalescence.*
 
 **Promising data sources:**
 
