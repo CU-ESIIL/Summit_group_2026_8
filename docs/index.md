@@ -176,7 +176,7 @@ People who could use this:
 
 ## Team Photo { #team-photo }
 
-![Team photo](assets/team/team_photo.jpg)
+![Team photo](docs/assets/group_photo.jpg)
 
 *Team members and collaborators who contributed to this project.*
 
@@ -193,15 +193,19 @@ Headline 3 — Looking at a different dataset (See fecal transplants above) will
 
 ## Visuals that tell a story 📣 { #story-visuals .oasis-report-out-section .oasis-report-out-day3 }
 
-![Second visual](docs/Train_vs_validation_loss_MS.png)
+![Second visual](docs/assets/Train_vs_validation_loss_MS.png)
 
 *Visual 1: Model loss showing convergence*
 
 
-![Story visual](workflows/output/gnn_model_CMKR/performance_visualizations_CMKR/validation_metrics_by_epoch.png)
+![Story visual](./docs/assets/validation_metrics_by_epoch.png)
 
 *Visual 2: The GNN performs poorly on community abundance data, but still performs slightly better than random chance on presence/absence.*
 
+![Story visual](docs/assets/GZ_validation_presence_average_precision.png)
+
+*Visual 3: PyTorch_Geometric model performed well on predicting final fungal community member presence*
+Here, we trained one graph per microcosm, where each taxon is a node with donor and resident abundance/presence features. A 2-layer GraphSAGE model learns taxon embeddings from these features and optional taxon-taxon association edges, then uses two output heads to predict each taxon’s final presence probability and final log-abundance.
 
 ## What’s next? 📣 { #whats-next .oasis-report-out-section .oasis-report-out-day3 }
 
