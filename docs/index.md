@@ -176,7 +176,7 @@ People who could use this:
 
 ## Team Photo { #team-photo }
 
-![Team photo](docs/assets/group_photo.jpg)
+![Team photo](assets/group_photo.jpg)
 
 *Team members and collaborators who contributed to this project.*
 
