@@ -377,3 +377,45 @@ Updated `workflows/code/build_graph_inputs.R` to use the user's original SpiecEa
 Action
 
 Updated `.gitignore` to ignore generated workflow outputs under `workflows/output/**` to avoid pushing large local artifacts to GitHub. Added an exception for `workflows/output/.gitkeep` so the output directory can still be tracked when needed.
+
+2026-05-14
+
+Action
+
+Recorded the active project goal in `workflows/README.md`: build a graph neural network workflow to predict community coalescence from donor and resident species co-occurrence/community matrices before communities are joined and compare predictions to observed final communities. Also cleaned up `workflows/README.md` formatting and expanded `workflows/code/README.md` with the current graph-input workflow and rerun command.
+
+2026-05-14
+
+Action
+
+Added `workflows/code/train_coalescence_gnn.R`, an R `torch` workflow that reads `workflows/output/graph_inputs/` files, builds taxon-node prediction examples from `coalescence_triplets.csv` and `combined_sample_taxon_edges.csv`, trains separate bacteria/fungi multi-task models to predict final presence and abundance from donor/resident features, and writes model outputs under `workflows/output/gnn_model/`. The first-pass model intentionally ignores the empty SpiecEasi edge file and uses self-loop graph blocks plus learned taxon embeddings so it can run locally or on HPC before association edges are available.
+
+2026-05-14
+
+Action
+
+Renamed the GNN training script to `workflows/code/train_coalescence_gnn_CMKR.R` so CMKR-created code files are clearly labeled. Updated the model to read `taxon_taxon_spieceasi_edges.csv` as a signed, weighted taxon-taxon association scaffold, build positive and negative normalized adjacency matrices, use those matrices in separate message-passing channels, and write `spieceasi_graph_summary.csv` plus `spieceasi_edges_used.csv` with model outputs.
+
+2026-05-14
+
+Action
+
+Added explanatory comments to `workflows/code/train_coalescence_gnn_CMKR.R` without changing the executable code. Comments now describe package checks, configuration, input loading, taxon feature construction, SpiecEasi adjacency construction, data splitting, model architecture, training losses, evaluation metrics, and output files. Confirmed the script still parses with Rscript.
+
+2026-05-14
+
+Action
+
+Added `workflows/code/visualize_gnn_performance_CMKR.R`, an R script that reads model outputs from `workflows/output/gnn_model`, visualizes kingdom-specific and combined GNN performance, writes plots and summary tables under `workflows/output/gnn_model/performance_visualizations_CMKR/`, and documents the generated visualization files. Confirmed the script parses with Rscript; local execution was not run because `data.table` and `ggplot2` are not installed in this Windows R environment.
+
+2026-05-14
+
+Action
+
+Revised `workflows/code/visualize_gnn_performance_CMKR.R` to be fully separate from model training/compilation and fully tidyverse-based. The script now explicitly loads saved performance CSVs from `workflows/output/gnn_model`, uses `readr`, `dplyr`, `tidyr`, `purrr`, and `ggplot2` workflows rather than `data.table`, and still writes visualizations and tidy summaries under `workflows/output/gnn_model/performance_visualizations_CMKR/`. Confirmed the script parses with Rscript; local execution was not run because `tidyverse` is not installed in this Windows R environment.
+
+2026-05-14
+
+Action
+
+Copied `workflows/code/train_coalescence_gnn_CMKR.R` to `workflows/code/train_coalescence_gnn_presence_absence_CMKR.R` for a presence/absence modeling variant. The copied script now binarizes all observed abundance values before feature and target construction, disables abundance loss by default, writes outputs to `workflows/output/gnn_model_presence_absence`, and replaces Bray-Curtis dissimilarity metrics with presence-set Jaccard and Sorensen similarity metrics for predicted versus observed final communities. Confirmed the copied script parses with Rscript.

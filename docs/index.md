@@ -186,37 +186,40 @@ People who could use this:
 
 ## Findings at a glance 📣 { #findings-at-a-glance .oasis-report-out-section .oasis-report-out-day3 }
 
-Headline 1 — what, where, how much
+Headline 1 — This type of data is adequate to successfully compile a GNN.
 
-...
 
-Headline 2 — change/trend/contrast
+Headline 2 — The GNN performs better on presence/absence data than on abundance data, but the predictive capacity on our initial dataset is still poor.
 
-...
 
-Headline 3 — implication for practice or policy
+Headline 3 — Looking at a different dataset (See fecal transplants above) will both broaden applicability into the medical field and might provide cleaner data to train the GNN on.
 
-...
 
 ## Visuals that tell a story 📣 { #story-visuals .oasis-report-out-section .oasis-report-out-day3 }
 
-![Story visual](assets/figures/main_result.png)
+![Second visual](docs/Train_vs_validation_loss_MS.png)
 
-*Visual 1: the main pattern or output we want people to remember.*
+*Visual 1: Model loss showing convergence*
+
+
+![Story visual](workflows/output/gnn_model/performance_visualizations_CMKR/validation_metrics_by_epoch.png)
+
+*Visual 2: The GNN performs poorly on community abundance data, but still performs slightly better than random chance on presence/absence.*
+
 
 ## What’s next? 📣 { #whats-next .oasis-report-out-section .oasis-report-out-day3 }
 
 Short term:
 
-- ...
+- Prepare a cleaner dataset to determine if the issue is with the data or the model architecture.
 
 Long term:
 
-- ...
+- Finalize a model architecture and test it with multiple types of data including medical, restoration, and agricultural community coalescence experiments.
 
 Who should see this next
 
-- ...
+- Someone who understands GNNs better than we do.
 
 ## Cite & Reuse { #cite-reuse }
 
