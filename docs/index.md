@@ -153,10 +153,6 @@ People who could use this:
 - We have not coded our own GNNs before
 - We lack python skills, but are searching for workarounds in R
 
-### Visuals
-
-![Method or workflow visual](assets/figures/figure1.png)
-
 ### Next Steps
 
 **Short term: **
@@ -202,7 +198,7 @@ Headline 3 — Looking at a different dataset (See fecal transplants above) will
 *Visual 1: Model loss showing convergence*
 
 
-![Story visual](workflows/output/gnn_model/performance_visualizations_CMKR/validation_metrics_by_epoch.png)
+![Story visual](workflows/output/gnn_model_CMKR/performance_visualizations_CMKR/validation_metrics_by_epoch.png)
 
 *Visual 2: The GNN performs poorly on community abundance data, but still performs slightly better than random chance on presence/absence.*
 
